@@ -88,7 +88,7 @@ def train_loop(model, train_loader, val_loader, optimizer, device):
             epochs_without_improvement = 0
             if not os.path.exists(EXPORT_DIR):
                 os.makedirs(EXPORT_DIR)
-            torch.save(model.state_dict(), f"{EXPORT_DIR}/best_model")
+            torch.save(model.state_dict(), f"{EXPORT_DIR}/best_model.pth")
         else:
             epochs_without_improvement += 1
 
