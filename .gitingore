@@ -1,0 +1,7 @@
+.DS_Store
+.idea/
+data/
+export_dir/
+__pycache__/
+*.pyc
+
