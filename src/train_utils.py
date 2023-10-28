@@ -5,7 +5,7 @@ import torch
 from sklearn.metrics import average_precision_score, f1_score, roc_auc_score
 
 EXPORT_DIR = "export_dir"
-EPOCHS = 3
+EPOCHS = 2
 
 
 def loss_fn(outputs, targets):
