@@ -59,9 +59,7 @@ def collator(items):
     }
 
 
-def create_data_loaders(train_data, test_data):
-    training_set = ReviewsData(train_data, tokenizer, MAX_LEN)
-    testing_set = ReviewsData(test_data, tokenizer, MAX_LEN)
+def create_data_loaders(train_data=None, test_data=None):
     train_params = {
         "batch_size": TRAIN_BATCH_SIZE,
         "shuffle": True,
@@ -76,6 +74,17 @@ def create_data_loaders(train_data, test_data):
         "collate_fn": collator,
     }
 
-    training_loader = DataLoader(training_set, **train_params)
-    testing_loader = DataLoader(testing_set, **test_params)
+    if train_data is not None:
+        training_set = ReviewsData(train_data, tokenizer, MAX_LEN)
+        training_loader = DataLoader(training_set, **train_params)
+    else:
+        training_loader = None
+
+    if test_data is not None:
+        testing_set = ReviewsData(test_data, tokenizer, MAX_LEN)
+        testing_loader = DataLoader(testing_set, **test_params)
+    else:
+        testing_loader = None
+
     return training_loader, testing_loader
+

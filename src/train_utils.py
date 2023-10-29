@@ -5,7 +5,7 @@ import torch
 from sklearn.metrics import average_precision_score, f1_score, roc_auc_score
 
 EXPORT_DIR = "export_dir"
-EPOCHS = 2
+EPOCHS = 5
 
 
 def loss_fn(outputs, targets):
@@ -35,24 +35,24 @@ def train_one_epoch(model, training_loader, optimizer, device):
     return epoch_loss / (n + 1)
 
 
-def validation(model, testing_loader):
+def validation(model, testing_loader, device):
     model.eval()
     epoch_loss = 0
     val_targets = []
     val_preds = []
+
     with torch.no_grad():
         for _, data in enumerate(testing_loader, 0):
-            ids = data["ids"]
-            mask = data["mask"]
-            token_type_ids = data["token_type_ids"]
-            targets = data["targets"]
-            outputs = model(ids, mask, token_type_ids)
+            ids = data["ids"].to(device)
+            mask = data["mask"].to(device)
+            token_type_ids = data["token_type_ids"].to(device)
+            targets = data["targets"].to(device)
 
+            outputs = model(ids, mask, token_type_ids)
             loss = loss_fn(outputs, targets)
 
             val_targets.extend(targets.cpu().detach().numpy().tolist())
             val_preds.extend(torch.sigmoid(outputs).cpu().detach().numpy().tolist())
-
             epoch_loss += loss.item()
 
     val_targets = np.concatenate(val_targets)
@@ -71,6 +71,7 @@ def validation(model, testing_loader):
     )
 
 
+
 def train_loop(model, train_loader, val_loader, optimizer, device):
     best_valid_loss = np.inf
     max_epochs_without_improvement = 2
@@ -78,7 +79,7 @@ def train_loop(model, train_loader, val_loader, optimizer, device):
 
     for epoch in range(EPOCHS):
         train_loss = train_one_epoch(model, train_loader, optimizer, device)
-        valid_loss, _, _, auc, ap, f1 = validation(model, val_loader)
+        valid_loss, _, _, auc, ap, f1 = validation(model, val_loader, device)
 
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss

@@ -5,7 +5,7 @@ from src.data_utils import create_data_loaders
 from src.model_utils import RobertaClass
 from src.train_utils import train_loop
 
-LEARNING_RATE = 3e-5
+LEARNING_RATE = 1e-5
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
