@@ -4,9 +4,6 @@ import numpy as np
 import torch
 from sklearn.metrics import average_precision_score, f1_score, roc_auc_score
 
-EXPORT_DIR = "export_dir"
-EPOCHS = 5
-
 
 def loss_fn(outputs, targets):
     return torch.nn.BCEWithLogitsLoss()(outputs, targets.float())
@@ -72,21 +69,21 @@ def validation(model, testing_loader, device):
 
 
 
-def train_loop(model, train_loader, val_loader, optimizer, device):
+def train_loop(model, train_loader, val_loader, optimizer, device, cfg):
     best_valid_loss = np.inf
     max_epochs_without_improvement = 2
     epochs_without_improvement = 0
 
-    for epoch in range(EPOCHS):
+    for epoch in range(cfg['training']['epochs']):
         train_loss = train_one_epoch(model, train_loader, optimizer, device)
         valid_loss, _, _, auc, ap, f1 = validation(model, val_loader, device)
 
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
             epochs_without_improvement = 0
-            if not os.path.exists(EXPORT_DIR):
-                os.makedirs(EXPORT_DIR)
-            torch.save(model.state_dict(), f"{EXPORT_DIR}/best_model.pth")
+            if not os.path.exists(cfg['training']['export_dir']):
+                os.makedirs(cfg['training']['export_dir'])
+            torch.save(model.state_dict(), f"{cfg['training']['export_dir']}/best_model.pth")
         else:
             epochs_without_improvement += 1
 
